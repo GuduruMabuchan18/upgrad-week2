@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location-Based Weather Logger</title>
+</head>
+<body onload="loadHistory()">
+
+    <h2>Location Logger</h2>
+
+    <button onclick="getLocation()">Get My Location</button>
+
+    <p id="output"></p>
+
+    <h3>Last 5 Locations:</h3>
+    <ul id="history"></ul>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                document.getElementById("output").innerHTML = "Geolocation not supported.";
+            }
+        }
+
+        function success(position) {
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+
+            document.getElementById("output").innerHTML =
+                "Latitude: " + lat + "<br>Longitude: " + lon;
+
+            let locations = JSON.parse(localStorage.getItem("locations")) || [];
+
+            locations.unshift({ latitude: lat, longitude: lon, time: new Date().toLocaleString() });
+
+            if (locations.length > 5) {
+                locations.pop(); // Keep only last 5
+            }
+
+            localStorage.setItem("locations", JSON.stringify(locations));
+
+            loadHistory();
+        }
+
+        function error(err) {
+            let message = "";
+            switch (err.code) {
+                case 1:
+                    message = "Permission denied.";
+                    break;
+                case 2:
+                    message = "Location unavailable.";
+                    break;
+                case 3:
+                    message = "Request timeout.";
+                    break;
+                default:
+                    message = "Unknown error.";
+            }
+            document.getElementById("output").innerHTML = message;
+        }
+
+        function loadHistory() {
+            let locations = JSON.parse(localStorage.getItem("locations")) || [];
+            let historyList = document.getElementById("history");
+            historyList.innerHTML = "";
+
+            locations.forEach(function(loc) {
+                let li = document.createElement("li");
+                li.innerHTML = loc.time + " - Lat: " + loc.latitude + ", Lon: " + loc.longitude;
+                historyList.appendChild(li);
+            });
+        }
+    </script>
+
+</body>
+</html>
