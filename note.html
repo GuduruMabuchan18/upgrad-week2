@@ -1,36 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Personal Notes Saver</title>
+    <title>Live Form Validation</title>
 </head>
-<body onload="loadNote()">
+<body>
 
-    <h2>My Daily Notes</h2>
+    <h2>Registration Form</h2>
 
-    <textarea id="note" rows="6" cols="40" placeholder="Write your note here..."></textarea>
+    Name: <input type="text" id="name" onchange="validateName()">
+    <span id="nameMsg" style="color:red;"></span>
     <br><br>
 
-    <button onclick="saveNote()">Save</button>
-    <button onclick="clearNote()">Clear</button>
+    Email: <input type="text" id="email" onchange="validateEmail()">
+    <span id="emailMsg" style="color:red;"></span>
+    <br><br>
+
+    Age: <input type="number" id="age" onchange="validateAge()">
+    <span id="ageMsg" style="color:red;"></span>
+    <br><br>
+
+    <button onclick="submitForm()">Submit</button>
 
     <script>
-        function saveNote() {
-            let noteText = document.getElementById("note").value;
-            localStorage.setItem("myNote", noteText);
-            alert("Note Saved!");
-        }
-
-        function loadNote() {
-            let savedNote = localStorage.getItem("myNote");
-            if (savedNote !== null) {
-                document.getElementById("note").value = savedNote;
+        function validateName() {
+            let name = document.getElementById("name").value;
+            if (name === "") {
+                document.getElementById("nameMsg").innerHTML = "Name cannot be empty";
+                return false;
+            } else {
+                document.getElementById("nameMsg").innerHTML = "";
+                return true;
             }
         }
 
-        function clearNote() {
-            localStorage.removeItem("myNote");
-            document.getElementById("note").value = "";
-            alert("Note Cleared!");
+        function validateEmail() {
+            let email = document.getElementById("email").value;
+            if (!email.includes("@")) {
+                document.getElementById("emailMsg").innerHTML = "Email must contain @";
+                return false;
+            } else {
+                document.getElementById("emailMsg").innerHTML = "";
+                return true;
+            }
+        }
+
+        function validateAge() {
+            let age = document.getElementById("age").value;
+            if (age <= 18 || age === "") {
+                document.getElementById("ageMsg").innerHTML = "Age must be greater than 18";
+                return false;
+            } else {
+                document.getElementById("ageMsg").innerHTML = "";
+                return true;
+            }
+        }
+
+        function submitForm() {
+            if (validateName() && validateEmail() && validateAge()) {
+                sessionStorage.setItem("name", document.getElementById("name").value);
+                sessionStorage.setItem("email", document.getElementById("email").value);
+                sessionStorage.setItem("age", document.getElementById("age").value);
+                alert("Form Submitted & Data Stored in SessionStorage!");
+            } else {
+                alert("Please fix errors before submitting.");
+            }
         }
     </script>
 
